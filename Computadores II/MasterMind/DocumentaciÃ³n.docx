@@ -1,0 +1,136 @@
+﻿		
+
+		Documentación del juego MasterMind
+
+
+
+
+
+
+
+
+
+	Carlos Sanz Fortes				DNI:70908244-A
+	Juan Carlos Martín García		DNI:70882826-T
+	
+
+
+
+
+Ficheros:
+
+	Master.asm
+	instrucciones.asm
+	configurar.asm
+	generador.asm
+	multijugador.asm
+	random.asm
+	jugar.asm
+	coincidir.asm
+	interfaz.asm
+	cadenas.asm
+	funcLeerCad.asm
+	limpia.asm
+	variables.asm
+
+
+
+Master.asm:
+
+	Muestra el menú dando a elegir una opción entre las 4 posibilidades que hay borrando la pantalla y enseñando de nuevo el menu en caso de que el número o el caracter no sea una de las opciones a elegir.
+
+	Una vez elegida una opción aceptada por el programa saltará a la subrutina correspondiente. En caso de que la opcion introducida sea un 4 se finalizará el programa.
+
+
+
+instrucciones.asm:
+
+	Muestra las instrucciones del juego haciendo uso de la funcion imprime_cadena implementada en el fichero "funcLeerCad.asm".
+
+
+
+configurar.asm:
+
+	Muestra los cambios que se pueden hacer, en este caso cambiar las vidas del juego dentro del rango 1-99 ambos inclusive, en el caso de que se introduzca solo un número y un intro se contará solo como unidades, en el caso de que se introduzca un caracter o un simbolo al no ser un número será rechazado y este no será recogido.
+
+
+
+generador.asm:
+
+	Muestra un mensaje pidiendo que se introduzca una dificultad, en el caso de que se introduzca un número o caracter no válido volvera a pedirlo hasta que se haya introducido correctamente.
+
+	Muestra un mensaje pidiendo contra que desea jugar el usuario, contra un segundo jugador o contra la máquina. Tras recoger la opción comprueba si es un número válido, en caso contrario limpiará la pantalla y volverá a pedir una opción válida hasta que esta se introduzca.
+
+	En el caso de que se haya elegido la opción jugador contra jugador saltará a la subrutina "multiplayer" alojada en el fichero "multijugador.asm" y acabará la subrutina generador.
+
+	En caso contrario pedirá que se le introduzca una semilla para generar el número aleatorio, saltará a la subrutina "random" alojada en el fichero "random.asm" y acabará la subrutina generador.
+
+
+
+multijugador.asm:
+
+	Pide a un segundo jugador que introduzca el codigo a adivinar por el primero jugador teniendo en cuenta la dificultad elegida, el codigo se comparte para ambas dificultades, facil y dificil, para poder compartir el código se utiliza una variable para comprobar que el número introducido está en el rango correcto, si es dificil el rango estará comprendido entre 1 y 8, en cambio si es facil estará comprendido entre 1 y 6. En ambos casos se comprueba que el dato introducido está en su rango y que no se repita ninguna cifra.
+
+
+
+random.asm:
+
+	Carga en b un número primo, multiplica el valor del registro a por el valor del registro b, al resultado almacenado en el registro d se le suma otro número primo, se almacena el dato para utilizarlo como semilla en una futura multiplicación, se conservan los tres últimos bits del registro b, se le suma al registro d el codigo ascii del 0, se incrementa en uno el registro d y se almacena en la variable, se recupera el valor almacenado y se intercambia el valor de los registros a y b. Se repite este mismo proceso en tres ocasiones más para conseguir un número lo más aleatorio posible.
+
+	Comprueba si la dificultad elegida es la opción facil, de ser así se asegura de cambiar todas las cifras superiores al codigo ascii del 6 por el codigo ascii del 1. Al hacer esto puede que haya números iguales por lo que va comparando uno a uno cada digito asegurandose de que solo hay una cifra con ese valor, en caso de que no sea así suma uno a la cifra y vuelve a empezar las comprobaciones hasta que no queda ninguna cifra repetida y todas están en el rango aceptable por la opción facil.
+
+	Tras hacer los cambios oportunos se mostrará un mensaje diciendo el número que se ha generado, se limpiará posteriormente la pantalla para que el código esté oculto. Esto se hace para que el usuario compruebe el perfecto funcionamiento de la generación aleatoria del código.
+
+
+
+jugar.asm:
+
+	Llama a la subrutina generador situada en el fichero "generador.asm", limpia la pantalla, muestra la cadena "codigo" y carga las vidas en una variable diferente para cuando se gane o pieda indistintamente volver a tener el mismo número de vidas independientemente de si has ganado o perdido.
+
+	Comparamos si las vidas se han acabado, en ese caso mostraremos al jugador un mensaje diciendo que ha perdido y recuperamos el valor de las vidas dado que las habremos perdido jugando por si el jugador decide volver a jugar con esas vidas sin necesidad de que vuelva a entrar a la opción "configurar" del menú.
+
+	En caso de que al jugador le sigan quedando vidas, se restará una vida y se restablecerán los valores predeterminados de las variables: numeros, aciertos, coindicendias y cont.
+
+	Introducimos un valor y dependiendo de que dificultad hayamos elegido previamente nos permitirá introducir un valor comprendido entre el 1 y el 6 si es la opción fácil o el 1 y el 8 si se ha escogido la versión dificil.
+
+	Comprueba que los numeros introducidos no están repetidos entre sí, si se da el caso eliminará el número y permitirá que se introduzca uno más de los que realmente se pueden introducir, esto pasa con todos los números excepto con el primero dado que es el primero y no se ha introducido antes. Esto se realizará tantas veces como sean necesarias hasta que se introduzcan los cuatro números sin que ninguno de ellos esté repetido.
+
+	Salta a la subrutina "interfaz", donde mostrará los aciertos, las coincidencias y las vidas que hay con la cifra de cuatro digitos introducida.
+
+	Tras mostrar los datos comprueba si las coincidencias son cuatro, en ese caso muestra un mensaje ganador, se restablecen las vidas y vuelve al menú. En el caso de que no sea así y las coincidencias no sean 4 volverá hasta el punto donde comprueba si al jugador le quedan vidas o no.
+
+
+
+coincidir.asm:
+
+	Comprueba cifra a cifra si las cifras introducidas coinciden con las cifras del código a descubrir, en caso de que alguna cifra introducida coincida con una de las cifras a descubrir incrementará los aciertos y las coincidencias en caso de que la cifra introducida esté en la misma posición que el de la cifra a descubrir saltando despues de los incrementos a la comparación de la siguiente cifra introducida, si no coincide la cifra introducida con ninguna cifra a descubrir continuará las comparaciones de las siguientes cifras hasta la cuarta cifra.
+
+
+
+interfaz.asm:
+
+	Muestra con las tabulaciones necesarias los aciertos de cada jugada, las coincidencias y las vidas restantes.
+
+
+
+cadenas.asm:
+
+	Contiene todas las cadenas que se necesitan utilizar durante la ejecución del programa en los diferentes ficheros existentes.
+
+
+
+funcLeerCad.asm:
+
+	Función que muestra una cadena de texto.
+
+
+
+limpia.asm:
+
+	Función que muestra la cadena "limpia", la cual contiene una secuencia de escape para limpiar la pantalla y poner el cursor arriba a la izquierda.
+
+
+
+variables.asm:
+
+	Contiene todas la variables que se necesitan durante la ejecución del programa en los diferentes ficheros existentes.

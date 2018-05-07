@@ -1,0 +1,26 @@
+nuevo=crearnodo;
+nuevo->dato=info;
+nuevo->sig=NULL;
+
+indice=lista;
+anterior=NULL;
+
+if (indice==NULL){ lista=nuevo;	} //lista vacia, se pone el nodo el primero
+else{		//se recorre la lista hasta encontrar el nodo con el contenido de dato mayor que el del nodo que se quiere inserta o bien hasta el final de la lista en caso de que no haya ningun nodo con el dato mayor al del nodo creado
+	while( (indice->dato < nuevo->dato) && (indice->sig != NULL) ){
+		anterior=indice;
+		indice=indice->sig;
+	}
+	if( (indice->sig == NULL) && (indice->dato < nuevo->dato) ){	//se inserta al final
+		nuevo->sig=NULL;
+		indice->sig=nuevo;
+	}else{
+		if(anterior == NULL){		//el nodo se inserta coomo el primero de la lista
+			nuevo->sig=lista;
+			lista=nuevo;
+		}else{		//El nodo se inserta donde se quiere en la lista
+			nuevo->sig=indice;
+			anterior->sig=nuevo;
+		}
+	}
+}
